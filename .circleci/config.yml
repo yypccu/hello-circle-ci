@@ -27,6 +27,7 @@ jobs: # we now have TWO jobs, so that a workflow can coordinate them!
       - run: echo "A more familiar hi" # We run a similar echo command to above.
       - attach_workspace:
         at: my_workspace
+        
       - run: |
         if [[ $(cat my_workspace/echo-output) == "Tyring out workspace" ]]; then
           echo "It works!";
