@@ -10,7 +10,12 @@ jobs: # we now have TWO jobs, so that a workflow can coordinate them!
     steps:
       - checkout # this pulls code down from GitHub
       - run: echo "A first hello" # This prints "A first hello" to stdout.
-      - run: sleep 25 # a command telling the job to "sleep" for 25 seconds.
+      - run: mkdir -p my_workspace
+      - run: echo "Trying out workspace" > my_workspace/echo-output
+      - persist_to_worksapce:
+        root: my_workspace
+        path:
+          - echo-output
   two: # This is our second job.
     docker: # it runs inside a docker image, the same as above.
       - image: circleci/ruby:2.4.1
@@ -20,11 +25,20 @@ jobs: # we now have TWO jobs, so that a workflow can coordinate them!
     steps:
       - checkout
       - run: echo "A more familiar hi" # We run a similar echo command to above.
-      - run: sleep 15 # and then sleep for 15 seconds.
+      - attach_workspace:
+        at: my_workspace
+      - run: |
+        if [[ $(cat my_workspace/echo-output) == "Tyring out workspace" ]]; then
+          echo "It works!";
+        else
+          echo "Nope!"; exit 1
+        fi
 # Under the workflows: map, we can coordinate our two jobs, defined above.
 workflows:
   version: 2
   one_and_two: # this is the name of our workflow
     jobs: # and here we list the jobs we are going to run.
       - one
-      - two
+      - two:
+        requires:
+          - one
