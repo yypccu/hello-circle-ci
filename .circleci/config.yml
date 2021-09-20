@@ -36,6 +36,9 @@ jobs:
           else
             echo "Nope!"; exit 1
           fi
+  end:
+    steps:
+      - run: echo "End of workflow"
 workflows:
   version: 2
   one_and_two:
@@ -44,3 +47,10 @@ workflows:
       - two:
           requires:
             - one
+      - hold:
+          type: approval
+          requires:
+            - two
+      - end:
+          requires:
+            - hold
