@@ -37,6 +37,11 @@ jobs:
             echo "Nope!"; exit 1
           fi
   end:
+    docker:
+      - image: circleci/ruby:2.4.1
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     steps:
       - run: echo "End of workflow"
 workflows:
